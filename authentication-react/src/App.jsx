@@ -43,7 +43,7 @@ function AppRoutes() {
           <Home />
         </PrivateRoute>
       } />
-      <Route path="/products" element={
+      {/* <Route path="/products" element={
         <PrivateRoute>
           <Products />
         </PrivateRoute>
@@ -52,7 +52,7 @@ function AppRoutes() {
         <PrivateRoute>
           <Cart />
         </PrivateRoute>
-      } />
+      } /> */}
       <Route path="/product/add" element={
         <PrivateRoute>
           <AddProduct />
