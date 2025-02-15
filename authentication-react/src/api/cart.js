@@ -5,9 +5,9 @@ export async function addToCart(product) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authentication: JSON.parse(localStorage.getItem("user")),
+      token: JSON.parse(localStorage.getItem("user")).token,
     },
-    body: JSON.stringify(product),
+    body: JSON.stringify({ products: [product] }),
   });
 
   if (!response.ok) {
@@ -22,6 +22,7 @@ export async function getCart() {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
+      token: JSON.parse(localStorage.getItem("user")).token,
     },
   });
 
@@ -53,6 +54,7 @@ export async function removeFromCart(productID) {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
+      token: JSON.parse(localStorage.getItem("user")).token,
     },
     body: JSON.stringify({ productID }),
   });
@@ -77,5 +79,5 @@ export async function demoAPi() {
     }
   );
   const result = await response.json();
-  return result
+  return result;
 }

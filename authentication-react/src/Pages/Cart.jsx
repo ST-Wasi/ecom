@@ -1,30 +1,32 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ShoppingBag, Trash2, MinusCircle, PlusCircle } from 'lucide-react';
-import { getCart, updateQuantity, removeFromCart } from '../api/cart';
+import { ShoppingBag, Trash2 } from 'lucide-react';
+import { getCart, removeFromCart } from '../api/cart';
 
 export default function Cart() {
     const [cart, setCart] = useState([]);
     const [cartTotal, setCartTotal] = useState(0);
 
+    async function getCartsData() {
+        return await getCart();
+    }
+
     useEffect(() => {
-        const currentCart = getCart();
-        setCart(currentCart);
-        setCartTotal(currentCart.reduce((total, item) => total + item.price * item.quantity, 0));
+        async function fetchCartData() {
+            const currentCart = await getCartsData();
+            console.log('✌️currentCart --->', currentCart);
+            setCart(currentCart?.cart?.products);
+            setCartTotal(currentCart?.cart?.products.reduce((total, item) => total + item.price, 0));
+        }
+
+        fetchCartData();
     }, []);
 
-    const handleUpdateQuantity = (itemId, newQuantity) => {
-        updateQuantity(itemId, newQuantity);
-        const updatedCart = getCart();
-        setCart(updatedCart);
-        setCartTotal(updatedCart.reduce((total, item) => total + item.price * item.quantity, 0));
-    };
-
-    const handleRemoveItem = (itemId) => {
-        removeFromCart(itemId);
-        const updatedCart = getCart();
-        setCart(updatedCart);
-        setCartTotal(updatedCart.reduce((total, item) => total + item.price * item.quantity, 0));
+    const handleRemoveItem = async (itemId) => {
+        await removeFromCart(itemId);
+        const updatedCart = await getCart();
+        setCart(updatedCart?.cart?.products);
+        setCartTotal(updatedCart?.cart?.products.reduce((total, item) => total + item.price, 0));
     };
 
     if (cart.length === 0) {
@@ -58,7 +60,7 @@ export default function Cart() {
                         <div className="bg-white rounded-lg shadow overflow-hidden">
                             <ul className="divide-y divide-gray-200">
                                 {cart.map((item) => (
-                                    <li key={item.id} className="p-4">
+                                    <li key={item._id} className="p-4">
                                         <div className="flex items-center space-x-4">
                                             <img
                                                 src={item.image}
@@ -72,25 +74,8 @@ export default function Cart() {
                                                 </p>
                                             </div>
                                             <div className="flex items-center space-x-4">
-                                                <div className="flex items-center space-x-2">
-                                                    <button
-                                                        onClick={() => handleUpdateQuantity(item.id, item.quantity - 1)}
-                                                        className="text-gray-600 hover:text-indigo-600"
-                                                    >
-                                                        <MinusCircle className="h-6 w-6" />
-                                                    </button>
-                                                    <span className="font-medium text-gray-900 w-8 text-center">
-                                                        {item.quantity}
-                                                    </span>
-                                                    <button
-                                                        onClick={() => handleUpdateQuantity(item.id, item.quantity + 1)}
-                                                        className="text-gray-600 hover:text-indigo-600"
-                                                    >
-                                                        <PlusCircle className="h-6 w-6" />
-                                                    </button>
-                                                </div>
                                                 <button
-                                                    onClick={() => handleRemoveItem(item.id)}
+                                                    onClick={() => handleRemoveItem(item._id)}
                                                     className="text-red-600 hover:text-red-700"
                                                 >
                                                     <Trash2 className="h-5 w-5" />

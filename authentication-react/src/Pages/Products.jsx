@@ -1,23 +1,38 @@
 "use client"
+
 import { useEffect, useState } from "react"
-import { Plus } from "lucide-react"
-import {Link} from "react-router-dom"
+import { Plus, Edit, Trash2 } from "lucide-react"
+import { Link } from "react-router-dom"
+import { deleteProduct } from "../api/product"
+import { addToCart, getCart } from "../api/cart"
 import { getProducts } from "../api/auth"
 
 export default function Products() {
   const [allProducts, setAllProducts] = useState([])
   const [filteredProducts, setFilteredProducts] = useState([])
   const [searchTerm, setSearchTerm] = useState("")
+  const [cart, setCart] = useState([])
+  const [loading, setLoading] = useState(true) // Add loading state
+  const [error, setError] = useState(null) // Add error state
 
   async function getProductsTwo() {
-    const response = await getProducts()
-    setAllProducts(response.products)
-    setFilteredProducts(response.products)
+    setLoading(true) // Set loading to true before fetching data
+    setError(null) // Reset error state
+    try {
+      const response = await getProducts()
+      setAllProducts(response.products)
+      setFilteredProducts(response.products)
+    } catch (error) {
+      setError(error) // Set error state if fetching fails
+      console.error("Error fetching products:", error)
+    } finally {
+      setLoading(false) // Set loading to false after fetching data, regardless of success or failure
+    }
   }
 
   useEffect(() => {
     getProductsTwo()
-  }, []) // This hook does not specify all of its dependencies: getProductsTwo
+  }, []) //Added [] to specify dependencies
 
   const handleSearch = (event) => {
     const term = event.target.value
@@ -29,6 +44,33 @@ export default function Products() {
         product.description.toLowerCase().includes(term.toLowerCase()),
     )
     setFilteredProducts(filtered)
+  }
+
+  const handleAddToCart = async (productId) => {
+    try {
+      await addToCart(productId)
+      const updatedCart = await getCart()
+      setCart(updatedCart)
+    } catch (error) {
+      console.error("Error adding to cart:", error)
+    }
+  }
+
+  const handleDeleteProduct = async (productId) => {
+    try {
+      await deleteProduct(productId)
+      await getProductsTwo() // Refresh the product list
+    } catch (error) {
+      console.error("Error deleting product:", error)
+    }
+  }
+
+  if (loading) {
+    return <div>Loading...</div> // Display loading indicator while fetching data
+  }
+
+  if (error) {
+    return <div>Error: {error.message}</div> // Display error message if fetching fails
   }
 
   return (
@@ -44,15 +86,13 @@ export default function Products() {
               onChange={handleSearch}
               className="px-4 py-2 border border-gray-300 rounded-md mr-4 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
-            {false && (
-              <Link
-                href="/products/new"
-                className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
-              >
-                <Plus className="h-5 w-5 mr-2" />
-                Add New Product
-              </Link>
-            )}
+            <Link
+              href="/products/new"
+              className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
+            >
+              <Plus className="h-5 w-5 mr-2" />
+              Add New Product
+            </Link>
           </div>
         </div>
 
@@ -73,9 +113,26 @@ export default function Products() {
               <div className="p-4 border-t">
                 <div className="flex justify-between items-center">
                   <span className="text-xl font-bold text-gray-900">${product.price.toFixed(2)}</span>
-                  <button className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">
-                    Add to Cart
-                  </button>
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={() => handleAddToCart(product._id)}
+                      className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700"
+                    >
+                      Add to Cart
+                    </button>
+                    <Link
+                      to={`/products/edit/${product._id}`}
+                      className="p-2 bg-yellow-500 text-white rounded hover:bg-yellow-600"
+                    >
+                      <Edit className="h-5 w-5" />
+                    </Link>
+                    <button
+                      onClick={() => handleDeleteProduct(product._id)}
+                      className="p-2 bg-red-500 text-white rounded hover:bg-red-600"
+                    >
+                      <Trash2 className="h-5 w-5" />
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

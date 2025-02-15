@@ -9,32 +9,30 @@ import { addToCart } from '../api/cart';
 
 export default function Home() {
   const { user, setUser, isAuthenticated } = useAuth();
-  const [allProducts, setAllProducts] = useState([])
-  const [cart, setCart] = useState([])
-  const [filteredProducts, setFilteredProducts] = useState([])
+  const [allProducts, setAllProducts] = useState([]);
+  const [cart, setCart] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
 
   async function getProductsTwo() {
-    const response = await getProducts()
-    setAllProducts(response.products)
-    const responseAPI = await demoAPi()
-    console.log('✌️responseAPI --->', responseAPI);
-    setFilteredProducts(response.products)
+    const response = await getProducts();
+    setAllProducts(response.products);
+    setFilteredProducts(response.products);
   }
 
   useEffect(() => {
-    getProductsTwo()
-  }, [])
+    getProductsTwo();
+  }, []);
+
   const navigate = useNavigate();
 
-  async function addToCart(id) {
-    const response = await fetch()
-  }
-
-  const handleAddToCart = (product) => {
-    addToCart(product);
-    const updatedCart = getCart();
-    setCart(updatedCart);
-    setCartTotal(updatedCart.reduce((total, item) => total + item.price * item.quantity, 0));
+  const handleAddToCart = async (productId) => {
+    try {
+      await addToCart(productId);
+      const updatedCart = await getCart();
+      setCart(updatedCart);
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+    }
   };
   return (
     <div className="min-h-screen bg-gray-100">
@@ -73,9 +71,7 @@ export default function Home() {
               <div className="p-4 border-t">
                 <div className="flex justify-between items-center">
                   <span className="text-xl font-bold text-gray-900">${product.price.toFixed(2)}</span>
-                  <button onClick={async () => {
-                    await addToCart(product._id)
-                  }} className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">
+                  <button onClick={() => handleAddToCart(product._id)} className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">
                     Add to Cart
                   </button>
                 </div>
