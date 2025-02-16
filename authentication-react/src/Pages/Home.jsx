@@ -47,14 +47,14 @@ export default function Home() {
       </nav>
 
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        {/* <div className="px-4 py-6 sm:px-0">
+        <div className="px-4 py-6 sm:px-0">
           <div className="border-4 border-dashed border-gray-200 rounded-lg h-96 flex items-center justify-center">
             <p className="text-gray-500 text-lg">
               This is your protected home page. Add your content here.
             </p>
           </div>
-        </div> */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        </div>
+        {/* <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filteredProducts.map((product) => (
             <div key={product.id} className="bg-white rounded-lg shadow overflow-hidden flex flex-col h-[400px]">
               <div className="h-48 overflow-hidden">
@@ -78,7 +78,7 @@ export default function Home() {
               </div>
             </div>
           ))}
-        </div>
+        </div> */}
       </main>
     </div>
   );

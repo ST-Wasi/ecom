@@ -9,6 +9,7 @@ import AddProduct from './Pages/AddProducts';
 import Products from './Pages/Products';
 import Navbar from './components/Navbar';
 import Cart from './Pages/Cart';
+import EditProduct from './Pages/EditProduct';
 
 function PrivateRoute({ children }) {
   const { isAuthenticated } = useAuth();
@@ -58,6 +59,12 @@ function AppRoutes() {
           <AddProduct />
         </PrivateRoute>
       } />
+      <Route path="/products/edit/:id" element={
+        <PrivateRoute>
+          <EditProduct />
+        </PrivateRoute>
+      }
+      />
     </Routes>
   );
 }
