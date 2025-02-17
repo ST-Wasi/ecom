@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { Plus, Edit, Trash2 } from "lucide-react"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { deleteProduct } from "../api/product"
 import { addToCart, getCart } from "../api/cart"
 import { getProducts } from "../api/auth"
@@ -14,6 +14,31 @@ export default function Products() {
   const [cart, setCart] = useState([])
   const [loading, setLoading] = useState(true) // Add loading state
   const [error, setError] = useState(null) // Add error state
+
+  // const { user, setUser, isAuthenticated } = useAuth();
+
+  async function getProductsTwo() {
+    const response = await getProducts();
+    setAllProducts(response.products);
+    setFilteredProducts(response.products);
+  }
+
+  useEffect(() => {
+    getProductsTwo();
+  }, []);
+
+  const navigate = useNavigate();
+
+  const handleAddToCart = async (productId) => {
+    try {
+      await addToCart(productId);
+      const updatedCart = await getCart();
+      setCart(updatedCart);
+      navigate('/cart')
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+    }
+  };
 
   async function getProductsTwo() {
     setLoading(true) // Set loading to true before fetching data
@@ -46,15 +71,15 @@ export default function Products() {
     setFilteredProducts(filtered)
   }
 
-  const handleAddToCart = async (productId) => {
-    try {
-      await addToCart(productId)
-      const updatedCart = await getCart()
-      setCart(updatedCart)
-    } catch (error) {
-      console.error("Error adding to cart:", error)
-    }
-  }
+  // const handleAddToCart = async (productId) => {
+  //   try {
+  //     await addToCart(productId)
+  //     const updatedCart = await getCart()
+  //     setCart(updatedCart)
+  //   } catch (error) {
+  //     console.error("Error adding to cart:", error)
+  //   }
+  // }
 
   const handleDeleteProduct = async (productId) => {
     try {
