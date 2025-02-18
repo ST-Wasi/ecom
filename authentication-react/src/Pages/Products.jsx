@@ -145,18 +145,18 @@ export default function Products() {
                     >
                       Add to Cart
                     </button>
-                    <Link
+                    {JSON.parse(localStorage.getItem('user')).id == product.user && <Link
                       to={`/products/edit/${product._id}`}
                       className="p-2 bg-yellow-500 text-white rounded hover:bg-yellow-600"
                     >
                       <Edit className="h-5 w-5" />
-                    </Link>
-                    <button
+                    </Link>}
+                    {JSON.parse(localStorage.getItem('user')).id == product.user && <button
                       onClick={() => handleDeleteProduct(product._id)}
                       className="p-2 bg-red-500 text-white rounded hover:bg-red-600"
                     >
                       <Trash2 className="h-5 w-5" />
-                    </button>
+                    </button>}
                   </div>
                 </div>
               </div>
